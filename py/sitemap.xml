@@ -2,50 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://posit-dev.github.io/querychat/py/examples/sqlite.html</loc>
-    <lastmod>2025-07-01T23:39:41.648Z</lastmod>
+    <lastmod>2025-07-01T23:49:42.034Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/examples/pandas.html</loc>
-    <lastmod>2025-07-01T23:39:41.648Z</lastmod>
+    <lastmod>2025-07-01T23:49:42.033Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/reference/ui.html</loc>
-    <lastmod>2025-07-01T23:40:07.813Z</lastmod>
+    <lastmod>2025-07-01T23:50:09.466Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/reference/sidebar.html</loc>
-    <lastmod>2025-07-01T23:40:07.806Z</lastmod>
+    <lastmod>2025-07-01T23:50:09.459Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/reference/server.html</loc>
-    <lastmod>2025-07-01T23:40:07.808Z</lastmod>
+    <lastmod>2025-07-01T23:50:09.461Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/includes/github_models-callout.html</loc>
-    <lastmod>2025-07-01T23:39:41.648Z</lastmod>
+    <lastmod>2025-07-01T23:49:42.034Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/includes/github_models.html</loc>
-    <lastmod>2025-07-01T23:39:41.648Z</lastmod>
+    <lastmod>2025-07-01T23:49:42.034Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/reference/system_prompt.html</loc>
-    <lastmod>2025-07-01T23:40:07.811Z</lastmod>
+    <lastmod>2025-07-01T23:50:09.464Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/reference/init.html</loc>
-    <lastmod>2025-07-01T23:40:07.803Z</lastmod>
+    <lastmod>2025-07-01T23:50:09.456Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/reference/index.html</loc>
-    <lastmod>2025-07-01T23:40:07.788Z</lastmod>
+    <lastmod>2025-07-01T23:50:09.442Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/index.html</loc>
-    <lastmod>2025-07-01T23:39:41.648Z</lastmod>
+    <lastmod>2025-07-01T23:49:42.034Z</lastmod>
   </url>
   <url>
     <loc>https://posit-dev.github.io/querychat/py/examples/index.html</loc>
-    <lastmod>2025-07-01T23:39:41.648Z</lastmod>
+    <lastmod>2025-07-01T23:49:42.033Z</lastmod>
   </url>
 </urlset>
