@@ -266,11 +266,6 @@ get_schema.dbi_source <- function(source, ...) {
     "Columns:"
   )
 
-  # Build single query to get column statistics
-  select_parts <- character(0)
-  numeric_columns <- character(0)
-  text_columns <- character(0)
-
   # Get sample of data to determine types
   sample_query <- glue::glue_sql(
     "SELECT * FROM {`table_name`} LIMIT 1",
@@ -278,30 +273,36 @@ get_schema.dbi_source <- function(source, ...) {
   )
   sample_data <- DBI::dbGetQuery(conn, sample_query)
 
-  for (col in columns) {
-    col_class <- class(sample_data[[col]])[1]
-
-    if (
-      col_class %in%
-        c("integer", "numeric", "double", "Date", "POSIXct", "POSIXt")
-    ) {
-      numeric_columns <- c(numeric_columns, col)
-      select_parts <- c(
-        select_parts,
-        glue::glue_sql("MIN({`col`}) as {`col`}__min", .con = conn),
-        glue::glue_sql("MAX({`col`}) as {`col`}__max", .con = conn)
-      )
-    } else if (col_class %in% c("character", "factor")) {
-      text_columns <- c(text_columns, col)
-      select_parts <- c(
-        select_parts,
-        glue::glue_sql(
-          "COUNT(DISTINCT {`col`}) as {`col`}__distinct_count",
-          .con = conn
-        )
-      )
-    }
-  }
+  # Vectorized column classification
+  col_classes <- vapply(columns, function(col) class(sample_data[[col]])[1], character(1))
+  
+  # Identify numeric and text columns using vectorized operations
+  is_numeric <- col_classes %in% c("integer", "numeric", "double", "Date", "POSIXct", "POSIXt")
+  is_text <- col_classes %in% c("character", "factor")
+  
+  numeric_columns <- columns[is_numeric]
+  text_columns <- columns[is_text]
+  
+  # Generate select parts for numeric columns
+  numeric_min_parts <- vapply(numeric_columns, function(col) {
+    as.character(glue::glue_sql("MIN({`col`}) as {`col`}__min", .con = conn))
+  }, character(1))
+  
+  numeric_max_parts <- vapply(numeric_columns, function(col) {
+    as.character(glue::glue_sql("MAX({`col`}) as {`col`}__max", .con = conn))
+  }, character(1))
+  
+  # Generate select parts for text columns
+  text_distinct_parts <- vapply(text_columns, function(col) {
+    as.character(glue::glue_sql("COUNT(DISTINCT {`col`}) as {`col`}__distinct_count", .con = conn))
+  }, character(1))
+  
+  # Combine all select parts
+  select_parts <- c(
+    numeric_min_parts,
+    numeric_max_parts,
+    text_distinct_parts
+  )
 
   # Execute statistics query
   column_stats <- list()
@@ -325,31 +326,21 @@ get_schema.dbi_source <- function(source, ...) {
 
   # Get categorical values for text columns below threshold
   categorical_values <- list()
-  text_cols_to_query <- character(0)
 
-  # Always include the 'name' field from test_df for test case in tests/testthat/test-data-source.R
-  if ("name" %in% text_columns) {
-    text_cols_to_query <- c(text_cols_to_query, "name")
-  }
-
-  for (col_name in text_columns) {
+  # Use vapply to determine which text columns should be queried
+  text_cols_to_include <- vapply(text_columns, function(col_name) {
     distinct_count_key <- paste0(col_name, "__distinct_count")
-    if (
-      distinct_count_key %in%
-        names(column_stats) &&
-        !is.na(column_stats[[distinct_count_key]]) &&
-        column_stats[[distinct_count_key]] <= categorical_threshold
-    ) {
-      text_cols_to_query <- c(text_cols_to_query, col_name)
-    }
-  }
-
-  # Remove duplicates
-  text_cols_to_query <- unique(text_cols_to_query)
-
-  # Get categorical values
-  if (length(text_cols_to_query) > 0) {
-    for (col_name in text_cols_to_query) {
+    distinct_count_key %in% names(column_stats) &&
+      !is.na(column_stats[[distinct_count_key]]) &&
+      column_stats[[distinct_count_key]] <= categorical_threshold
+  }, logical(1))
+  
+  # Filter text columns to only include those below threshold
+  cols_to_query <- text_columns[text_cols_to_include]
+  
+  # Get categorical values using lapply
+  if (length(cols_to_query) > 0) {
+    categorical_values <- lapply(cols_to_query, function(col_name) {
       tryCatch(
         {
           cat_query <- glue::glue_sql(
@@ -358,23 +349,29 @@ get_schema.dbi_source <- function(source, ...) {
           )
           result <- DBI::dbGetQuery(conn, cat_query)
           if (nrow(result) > 0) {
-            categorical_values[[col_name]] <- result[[1]]
+            return(result[[1]])
+          } else {
+            return(NULL)
           }
         },
         error = function(e) {
           # Skip categorical values if query fails
+          return(NULL)
         }
       )
-    }
+    })
+    names(categorical_values) <- cols_to_query
+    # Remove NULL entries
+    categorical_values <- categorical_values[!vapply(categorical_values, is.null, logical(1))]
   }
 
-  # Build schema description
-  for (col in columns) {
+  # Build schema description using vectorization
+  column_info <- sapply(columns, function(col) {
     col_class <- class(sample_data[[col]])[1]
     sql_type <- r_class_to_sql_type(col_class)
-
-    column_info <- glue::glue("- {col} ({sql_type})")
-
+    
+    info <- glue::glue("- {col} ({sql_type})")
+    
     # Add range info for numeric columns
     if (col %in% numeric_columns) {
       min_key <- paste0(col, "__min")
@@ -389,22 +386,24 @@ get_schema.dbi_source <- function(source, ...) {
         range_info <- glue::glue(
           "  Range: {column_stats[[min_key]]} to {column_stats[[max_key]]}"
         )
-        column_info <- paste(column_info, range_info, sep = "\n")
+        info <- paste(info, range_info, sep = "\n")
       }
     }
-
+    
     # Add categorical values for text columns
     if (col %in% names(categorical_values)) {
       values <- categorical_values[[col]]
       if (length(values) > 0) {
         values_str <- paste0("'", values, "'", collapse = ", ")
         cat_info <- glue::glue("  Categorical values: {values_str}")
-        column_info <- paste(column_info, cat_info, sep = "\n")
+        info <- paste(info, cat_info, sep = "\n")
       }
     }
-
-    schema_lines <- c(schema_lines, column_info)
-  }
+    
+    return(info)
+  })
+  
+  schema_lines <- c(schema_lines, column_info)
 
   paste(schema_lines, collapse = "\n")
 }

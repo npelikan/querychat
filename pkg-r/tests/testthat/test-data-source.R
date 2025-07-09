@@ -60,14 +60,14 @@ test_that("get_schema methods return proper schema", {
     stringsAsFactors = FALSE
   )
 
-  df_source <- querychat_data_source(test_df, table_name = "test_table")
+  df_source <- querychat_data_source(test_df, table_name = "test_table", categorical_threshold=20)
   schema <- get_schema(df_source)
   expect_type(schema, "character")
   expect_true(grepl("Table: test_table", schema))
   expect_true(grepl("id \\(INTEGER\\)", schema))
   expect_true(grepl("name \\(TEXT\\)", schema))
   expect_true(grepl("active \\(BOOLEAN\\)", schema))
-  expect_true(grepl("Categorical values", schema)) # Should list categorical values
+  expect_match(schema, "Categorical values") # Should list categorical values
 
   # Test with DBI source
   temp_db <- tempfile(fileext = ".db")
