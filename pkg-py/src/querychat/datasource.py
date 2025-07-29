@@ -43,6 +43,22 @@ class DataSource(Protocol):
         """
         ...
 
+    def test_query(self, query: str) -> pd.DataFrame:
+        """
+        Test a SQL query by executing it and returning only the first row.
+
+        This is used to validate that a query works without retrieving a potentially
+        large result set.
+
+        Args:
+            query: SQL query to execute
+
+        Returns:
+            First row of query results as a pandas DataFrame
+
+        """
+        ...
+
     def get_data(self) -> pd.DataFrame:
         """
         Return the unfiltered data as a DataFrame.
@@ -140,6 +156,20 @@ class DataFrameSource:
 
         """
         return self._conn.execute(query).df()
+
+    def test_query(self, query: str) -> None:
+        """
+        Test a SQL query by executing it without retrieving results.
+
+        This is used to validate that a query works syntactically without
+        retrieving any result set.
+
+        Args:
+            query: SQL query to execute
+
+        """
+        # Just execute the query to check for syntax errors
+        self._conn.execute(query)
 
     def get_data(self) -> pd.DataFrame:
         """
@@ -326,6 +356,21 @@ class SQLAlchemySource:
         """
         with self._get_connection() as conn:
             return pd.read_sql_query(text(query), conn)
+
+    def test_query(self, query: str) -> None:
+        """
+        Test a SQL query by executing it without retrieving results.
+
+        This is used to validate that a query works syntactically without
+        retrieving any result set.
+
+        Args:
+            query: SQL query to execute
+
+        """
+        with self._get_connection() as conn:
+            # Execute the query but don't fetch results, just test for errors
+            conn.execute(text(query))
 
     def get_data(self) -> pd.DataFrame:
         """

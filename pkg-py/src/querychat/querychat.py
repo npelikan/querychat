@@ -476,8 +476,8 @@ def mod_server(  # noqa: D417
         await append_output(f"\n```sql\n{query}\n```\n\n")
 
         try:
-            # Try the query to see if it errors
-            data_source.execute_query(query)
+            # Test the query to see if it errors without retrieving results
+            data_source.test_query(query)
         except Exception as e:
             error_msg = str(e)
             await append_output(f"> Error: {error_msg}\n\n")
