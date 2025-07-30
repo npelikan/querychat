@@ -43,7 +43,7 @@ class DataSource(Protocol):
         """
         ...
 
-    def test_query(self, query: str) -> pd.DataFrame:
+    def test_query(self, query: str) -> None:
         """
         Test a SQL query by executing it and returning only the first row.
 
