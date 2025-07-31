@@ -163,12 +163,15 @@ class QueryChat:
 
         """
         try:
-            import ibis
-        except ImportError:
+            import importlib.util  # noqa: PLC0415
+
+            if importlib.util.find_spec("ibis") is None:
+                raise ImportError()
+        except ImportError as err:
             raise ImportError(
                 "The ibis package is required for this feature. "
                 "Install it with: pip install querychat[ibis]",
-            )
+            ) from err
 
         # Get the current SQL query
         current_query = self.sql()
@@ -177,7 +180,7 @@ class QueryChat:
         if not current_query:
             if self._data_source is None:
                 raise ValueError(
-                    "No SQL query has been generated yet and no data source is available"
+                    "No SQL query has been generated yet and no data source is available",
                 )
 
             # Return a table for the original table
@@ -632,5 +635,9 @@ def mod_server(  # noqa: D417
 
     # Return the interface for other components to use
     return QueryChat(
-        chat, current_query.get, current_title.get, filtered_df, data_source
+        chat,
+        current_query.get,
+        current_title.get,
+        filtered_df,
+        data_source,
     )

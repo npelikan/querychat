@@ -21,11 +21,11 @@ data_desc = Path(__file__).parent / "data_description.md"
 
 # 1. Configure querychat
 
-def use_github_models(system_prompt: str) -> chatlas.Chat:
-    # GitHub models give us free rate-limited access to the latest LLMs
-    # you will need to have GITHUB_PAT defined in your environment
-    return chatlas.ChatGithub(
-        model="gpt-4.1",
+def use_google_models(system_prompt: str) -> chatlas.Chat:
+    # Use Google's Gemini models
+    # You may want to change this to use your preferred model
+    return chatlas.ChatGoogle(
+        model="gemini-2.5-flash-lite",
         system_prompt=system_prompt,
     )
 
@@ -34,7 +34,7 @@ querychat_config = qc.init(
     "titanic",
     greeting=greeting,
     data_description=data_desc,
-    create_chat_callback=use_github_models,
+    create_chat_callback=use_google_models,
 )
 
 # Create UI

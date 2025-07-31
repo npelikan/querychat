@@ -12,6 +12,7 @@ Requirements:
 """
 
 from shiny import App, reactive, render, ui
+import chatlas
 import ibis
 import pandas as pd
 import querychat
@@ -123,12 +124,22 @@ app_ui = ui.page_sidebar(
 )
 
 def server(input, output, session):
+    # Function to create chat model
+    def use_google_models(system_prompt: str) -> chatlas.Chat:
+        # Use Google's Gemini models
+        # You may want to change this to use your preferred model
+        return chatlas.ChatGoogle(
+            model="gemini-2.5-flash-lite",
+            system_prompt=system_prompt,
+        )
+        
     # Initialize QueryChat
     querychat_config = querychat.init(
         engine,
         table_name="mtcars",
         greeting=greeting,
         data_description=data_description,
+        create_chat_callback=use_google_models,
     )
     
     # Initialize querychat server object

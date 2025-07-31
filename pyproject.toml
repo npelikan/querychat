@@ -48,20 +48,23 @@ ibis = ["ibis-framework>=8.0.0"]
 
 [dependency-groups]
 dev = [
-    "ruff>=0.6.5", 
-    "pyright>=1.1.401", 
-    "tox-uv>=1.11.4", 
+    "ruff>=0.6.5",
+    "pyright>=1.1.401",
+    "tox-uv>=1.11.4",
     "pytest>=8.4.0",
     "pytest-playwright>=0.4.0",
     "seaborn>=0.12.0",
     "ibis-framework[sqlite]>=8.0.0",
     "plotly>=5.13.0",
-    "shinywidgets>=0.2.1"
+    "shinywidgets>=0.2.1",
+    "google-genai>=1.28.0",
+    "pytest-recording>=0.13.4",
 ]
 docs = ["quartodoc>=0.11.1"]
-examples = ["seaborn", "openai"]
+examples = ["seaborn", "openai", "google-genai"]
 tests = [
-    "playwright>=1.40.0"
+    "google-genai>=1.28.0",
+    "playwright>=1.40.0",
 ]
 
 [tool.ruff]
