@@ -50,6 +50,7 @@ class QueryChat:
         sql: Callable[[], str],
         title: Callable[[], Union[str, None]],
         df: Callable[[], pd.DataFrame],
+        data_source: DataSource,
     ):
         """
         Initialize a QueryChat object.
@@ -59,12 +60,14 @@ class QueryChat:
             sql: Reactive that returns the current SQL query
             title: Reactive that returns the current title
             df: Reactive that returns the filtered data frame
+            data_source: The data source used for this chat session
 
         """
         self._chat = chat
         self._sql = sql
         self._title = title
         self._df = df
+        self._data_source = data_source
 
     def chat(self) -> chatlas.Chat:
         """
@@ -111,6 +114,82 @@ class QueryChat:
 
         """
         return self._df()
+
+    def to_ibis(self, conn: Any) -> Any:
+        """
+        Convert the current query to a lazily-executing ibis table.
+
+        This method allows you to bridge from querychat to the ibis ecosystem,
+        enabling further transformations, optimizations, or execution against
+        various backends supported by ibis.
+
+        This method requires the ibis package to be installed. You can install
+        it with: pip install querychat[ibis]
+
+        Args:
+            conn: An ibis backend connection (e.g., ibis.duckdb.connect(),
+                 ibis.sqlite.connect(), etc.)
+
+        Returns:
+            An ibis table that will lazily execute the current SQL query.
+            If no query has been generated yet, returns a table that refers to
+            the original data source table.
+
+        Raises:
+            ImportError: If ibis is not installed
+            ValueError: If data source is not available and no query exists
+
+        Example:
+            ```python
+            import ibis
+            import pandas as pd
+            import querychat
+
+            # Setup querychat with some data
+            data = pd.DataFrame({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+            qc_config = querychat.init(data, "my_table")
+            qc = querychat.server("qc", qc_config)
+
+            # After the user has interacted with the chat and generated a query
+            # Create an ibis connection
+            conn = ibis.duckdb.connect()
+
+            # Get an ibis table from the current query
+            ibis_table = qc.to_ibis(conn)
+
+            # Further transform with ibis operations
+            result = ibis_table.filter(ibis_table.x > 1).execute()
+            ```
+
+        """
+        try:
+            import ibis
+        except ImportError:
+            raise ImportError(
+                "The ibis package is required for this feature. "
+                "Install it with: pip install querychat[ibis]",
+            )
+
+        # Get the current SQL query
+        current_query = self.sql()
+
+        # If we don't have a query but we have a data source, return a table for that source
+        if not current_query:
+            if self._data_source is None:
+                raise ValueError(
+                    "No SQL query has been generated yet and no data source is available"
+                )
+
+            # Return a table for the original table
+            table_name = getattr(self._data_source, "_table_name", None)
+            if table_name:
+                return conn.table(table_name)
+            else:
+                # As a fallback, create a table from the data frame
+                return conn.create_table("querychat_data", self.df())
+
+        # Create an ibis table using the SQL query
+        return conn.sql(current_query)
 
     def __getitem__(self, key: str) -> Any:
         """
@@ -552,4 +631,6 @@ def mod_server(  # noqa: D417
             await chat_ui.append_message_stream(stream)
 
     # Return the interface for other components to use
-    return QueryChat(chat, current_query.get, current_title.get, filtered_df)
+    return QueryChat(
+        chat, current_query.get, current_title.get, filtered_df, data_source
+    )

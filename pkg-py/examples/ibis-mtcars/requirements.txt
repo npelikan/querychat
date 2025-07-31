@@ -1,0 +1,6 @@
+querychat[ibis]
+pandas
+sqlalchemy
+ibis-sqlite
+plotly
+shinywidgets
