@@ -11,6 +11,7 @@ Requirements:
 - pip install ibis-sqlite pandas plotly
 """
 
+from pathlib import Path
 from shiny import App, reactive, render, ui
 import chatlas
 import ibis
@@ -21,6 +22,7 @@ from shinywidgets import output_widget, render_widget
 import tempfile
 import sqlite3
 from sqlalchemy import create_engine
+import os
 
 # Load the mtcars dataset
 data = pd.read_csv('https://gist.githubusercontent.com/ZeccaLehn/4e06d2575eb9589dbe8c365d61cb056c/raw/64f1660f38ef523b2a1a13be77b002b98665cdfe/mtcars.csv')
@@ -38,35 +40,9 @@ engine = create_engine(f"sqlite:///{db_file}")
 # Create ibis connection for SQLite
 ibis_conn = ibis.sqlite.connect(db_file)
 
-# Greeting text for QueryChat
-greeting = """
-# Welcome to the Motor Trend Car Road Tests Dataset (mtcars)!
-
-This dataset contains fuel consumption and performance metrics for 32 automobiles from the 1974 Motor Trend US magazine.
-
-You can ask questions like:
-- Which cars have the highest MPG?
-- What's the relationship between horsepower and quarter mile time?
-- Show me cars with more than 6 cylinders.
-- What's the average MPG for cars with manual vs automatic transmission?
-"""
-
-# Data description for QueryChat
-data_description = """
-The dataset includes 32 observations on 11 variables:
-- car_name: Model of car
-- mpg: Miles per gallon
-- cyl: Number of cylinders
-- disp: Displacement (cu.in.)
-- hp: Gross horsepower
-- drat: Rear axle ratio
-- wt: Weight (1000 lbs)
-- qsec: 1/4 mile time
-- vs: Engine (0 = V-shaped, 1 = straight)
-- am: Transmission (0 = automatic, 1 = manual)
-- gear: Number of forward gears
-- carb: Number of carburetors
-"""
+# Load greeting and data description from markdown files
+greeting = Path(__file__).parent / "greeting.md"
+data_desc = Path(__file__).parent / "data_description.md"
 
 # Create UI
 app_ui = ui.page_sidebar(
@@ -127,7 +103,6 @@ def server(input, output, session):
     # Function to create chat model
     def use_google_models(system_prompt: str) -> chatlas.Chat:
         # Use Google's Gemini models
-        # You may want to change this to use your preferred model
         return chatlas.ChatGoogle(
             model="gemini-2.5-flash-lite",
             system_prompt=system_prompt,
@@ -138,7 +113,7 @@ def server(input, output, session):
         engine,
         table_name="mtcars",
         greeting=greeting,
-        data_description=data_description,
+        data_description=data_desc,
         create_chat_callback=use_google_models,
     )
     

@@ -4,6 +4,7 @@ import chatlas
 import querychat as qc
 from seaborn import load_dataset
 from shiny import App, render, ui
+import os
 
 titanic = load_dataset("titanic")
 
@@ -14,7 +15,6 @@ data_desc = Path(__file__).parent / "data_description.md"
 
 def use_google_models(system_prompt: str) -> chatlas.Chat:
     # Use Google's Gemini models
-    # You may want to change this to use your preferred model
     return chatlas.ChatGoogle(
         model="gemini-2.5-flash-lite",
         system_prompt=system_prompt,

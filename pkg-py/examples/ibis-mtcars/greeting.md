@@ -1,14 +1,9 @@
-Hello! I'm here to assist you with analyzing the Titanic dataset.
-Here are some examples of what you can ask me to do:
+# Welcome to the Motor Trend Car Road Tests Dataset (mtcars)!
 
-- **Filtering and Sorting:**
-  - Show only passengers who boarded in Cherbourg.
-  - Sort passengers by age in descending order.
+This dataset contains fuel consumption and performance metrics for 32 automobiles from the 1974 Motor Trend US magazine.
 
-- **Data Analysis:**
-  - What is the survival rate for each passenger class?
-  - How many children were aboard the Titanic?
-
-- **General Statistics:**
-  - Calculate the average age of female passengers.
-  - Find the total fare collected from passengers who did not survive.
+You can ask questions like:
+- Which cars have the highest MPG?
+- What's the relationship between horsepower and quarter mile time?
+- Show me cars with more than 6 cylinders.
+- What's the average MPG for cars with manual vs automatic transmission?

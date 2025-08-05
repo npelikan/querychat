@@ -1,6 +1,7 @@
 import chatlas
 from seaborn import load_dataset
 from shiny import App, render, ui
+import os
 
 import querychat as qc
 
@@ -13,7 +14,6 @@ titanic = load_dataset("titanic")
 
 def use_google_models(system_prompt: str) -> chatlas.Chat:
     # Use Google's Gemini models
-    # You may want to change this to use your preferred model
     return chatlas.ChatGoogle(
         model="gemini-2.5-flash-lite",
         system_prompt=system_prompt,

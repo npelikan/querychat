@@ -15,6 +15,7 @@ from shiny import Inputs, Outputs, Session, module, reactive, ui
 
 if TYPE_CHECKING:
     import pandas as pd
+    from ibis import Table
     from narwhals.typing import IntoFrame
 
 from .datasource import DataFrameSource, DataSource, SQLAlchemySource
@@ -115,7 +116,7 @@ class QueryChat:
         """
         return self._df()
 
-    def to_ibis(self, conn: Any) -> Any:
+    def to_ibis(self, conn: Any) -> Table:
         """
         Convert the current query to a lazily-executing ibis table.
 
