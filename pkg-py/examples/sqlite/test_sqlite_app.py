@@ -68,6 +68,7 @@ def mock_db_path():
     os.unlink(db_path)
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_sqlite_app_loads(page: Page, local_app, mock_db_path):
     """Test that the app loads and the initial UI elements are present."""
     # Mock file reads for greeting and data_description
@@ -109,6 +110,7 @@ def test_sqlite_app_loads(page: Page, local_app, mock_db_path):
         assert data_table.is_visible(), "Data table should be visible"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_sqlite_app_query(page: Page, local_app, mock_db_path):
     """Test that querying works and updates the data table."""
     # Mock file reads for greeting and data_description
@@ -186,6 +188,7 @@ def test_sqlite_app_query(page: Page, local_app, mock_db_path):
             assert has_male_indicator, f"Row {i} should be a male passenger"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_sqlite_app_filter_query(page: Page, local_app, mock_db_path):
     """Test that filtering queries work correctly."""
     # Mock file reads for greeting and data_description
@@ -260,6 +263,7 @@ def test_sqlite_app_filter_query(page: Page, local_app, mock_db_path):
             assert has_cherbourg, f"Row {i} should be a Cherbourg passenger"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_sqlite_app_stats_query(page: Page, local_app, mock_db_path):
     """Test that statistical queries work and display correct SQL."""
     # Mock file reads for greeting and data_description
@@ -327,6 +331,7 @@ def test_sqlite_app_stats_query(page: Page, local_app, mock_db_path):
         assert has_rates or has_table, "Response should show survival rates by class"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_sqlite_app_sequential_queries(page: Page, local_app, mock_db_path):
     """Test that sequential queries work and maintain context."""
     # Mock file reads for greeting and data_description

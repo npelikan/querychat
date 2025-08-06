@@ -2,6 +2,7 @@
 End-to-end test for the ibis-mtcars example app.
 """
 
+import os
 import sys
 import pytest
 import re
@@ -19,6 +20,7 @@ TEST_SEQUENTIAL_1 = "Show cars with more than 4 cylinders"
 TEST_SEQUENTIAL_2 = "Of those, show only cars with automatic transmission"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_ibis_app_loads(page: Page, local_app):
     """Test that the app loads and the initial UI elements are present."""
     # Navigate to the app
@@ -59,6 +61,7 @@ def test_ibis_app_loads(page: Page, local_app):
         assert car_count > 0, f"Expected positive car count, but got {car_count}"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_ibis_app_query(page: Page, local_app):
     """Test that querying works and updates the visualizations."""
     # Navigate to the app
@@ -132,6 +135,7 @@ def test_ibis_app_query(page: Page, local_app):
         assert max(mpg_values) > 20, "Should show cars with high MPG values"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_ibis_app_plots(page: Page, local_app):
     """Test that the plots are rendered correctly."""
     # Navigate to the app
@@ -186,6 +190,7 @@ def test_ibis_app_plots(page: Page, local_app):
     assert page.locator("#cyl_plot").is_visible(), "Cylinder plot should still be visible after query"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_ibis_app_tab_navigation(page: Page, local_app):
     """Test that tab navigation works correctly."""
     # Navigate to the app
@@ -232,6 +237,7 @@ def test_ibis_app_tab_navigation(page: Page, local_app):
     assert page.locator("#mpg_hp_plot").is_visible(), "MPG vs HP plot should be visible after going back to Overview"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_ibis_app_plot_updates(page: Page, local_app):
     """Test that plots update correctly when submitting queries."""
     # Navigate to the app
@@ -305,6 +311,7 @@ def test_ibis_app_plot_updates(page: Page, local_app):
     assert page.locator("#cyl_plot").is_visible(), "Cylinder plot should be visible after multiple queries"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_ibis_app_sequential_queries(page: Page, local_app):
     """Test that sequential queries maintain context."""
     # Navigate to the app

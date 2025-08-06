@@ -47,6 +47,7 @@ TEST_SEQUENTIAL_1 = "Show me passengers who paid more than 50 for fare"
 TEST_SEQUENTIAL_2 = "Among those, who are females?"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_pandas_app_loads(page: Page, local_app):
     """Test that the app loads and the initial UI elements are present."""
     # Mock file reads for greeting and data_description
@@ -80,6 +81,7 @@ def test_pandas_app_loads(page: Page, local_app):
         page.wait_for_timeout(1000)
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_pandas_app_query(page: Page, local_app):
     """Test that querying works and updates the data table."""
     # Mock file reads for greeting and data_description
@@ -130,6 +132,7 @@ def test_pandas_app_query(page: Page, local_app):
                 assert age > 30, f"Row {i} should have age > 30, found {age}"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_pandas_app_complex_query(page: Page, local_app):
     """Test complex statistical queries with multiple conditions."""
     # Mock file reads for greeting and data_description
@@ -182,6 +185,7 @@ def test_pandas_app_complex_query(page: Page, local_app):
         assert has_numerical_result, "Response should include a numerical average age"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_pandas_app_filter_accuracy(page: Page, local_app):
     """Test that filtering queries accurately filter the data."""
     # Mock file reads for greeting and data_description
@@ -252,6 +256,7 @@ def test_pandas_app_filter_accuracy(page: Page, local_app):
             assert has_southampton, f"Row {i} should be from Southampton"
 
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_pandas_app_sequential_queries(page: Page, local_app):
     """Test that sequential queries work and maintain context."""
     # Mock file reads for greeting and data_description

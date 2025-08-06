@@ -3,13 +3,9 @@ End-to-end test for the basic QueryChat example app.
 """
 
 import os
-import sys
 import pytest
 import re
-from pathlib import Path
-import chatlas
 import seaborn as sns
-import pandas as pd
 from playwright.sync_api import Page
 
 # Load the titanic dataset
@@ -21,6 +17,7 @@ TEST_QUERY_SEQUENTIAL_1 = "Show me first class passengers"
 TEST_QUERY_SEQUENTIAL_2 = "Of those, show only those who survived"
 TEST_SURVIVAL_RATE_QUERY = "What is the survival rate for each passenger class?"
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_basic_app_loads(page: Page, local_app):
     """Test that the app loads and the initial UI elements are present."""
     # Navigate to the app
@@ -43,6 +40,7 @@ def test_basic_app_loads(page: Page, local_app):
     data_table = page.locator("#data_table")
     assert data_table.is_visible(), "Data table should be visible"
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_basic_app_query(page: Page, local_app):
     """Test that querying works and updates the data table."""
     # Navigate to the app
@@ -100,6 +98,7 @@ def test_basic_app_query(page: Page, local_app):
         assert has_survival_indicator, f"Row {i} should indicate survival"
         assert has_female_indicator, f"Row {i} should be for a female passenger"
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_basic_app_sequential_queries(page: Page, local_app):
     """Test that sequential queries work and maintain context."""
     # Navigate to the app
@@ -166,6 +165,7 @@ def test_basic_app_sequential_queries(page: Page, local_app):
         assert has_first_class, f"Row {i} should be a first class passenger"
         assert has_survival_indicator, f"Row {i} should indicate survival"
 
+@pytest.mark.skipif(os.environ.get('GITHUB_ACTIONS') == 'true', reason="API calls should not run in CI")
 def test_basic_app_stats_query(page: Page, local_app):
     """Test that statistical queries work and display results correctly."""
     # Navigate to the app

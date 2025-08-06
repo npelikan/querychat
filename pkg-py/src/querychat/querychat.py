@@ -15,7 +15,7 @@ from shiny import Inputs, Outputs, Session, module, reactive, ui
 
 if TYPE_CHECKING:
     import pandas as pd
-    from ibis import Table
+    from ibis.expr.types import Table
     from narwhals.typing import IntoFrame
 
 from .datasource import DataFrameSource, DataSource, SQLAlchemySource
