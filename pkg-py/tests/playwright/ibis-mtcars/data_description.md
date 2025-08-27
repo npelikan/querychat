@@ -1,0 +1,13 @@
+The dataset includes 32 observations on 11 variables:
+- car_name: Model of car
+- mpg: Miles per gallon
+- cyl: Number of cylinders
+- disp: Displacement (cu.in.)
+- hp: Gross horsepower
+- drat: Rear axle ratio
+- wt: Weight (1000 lbs)
+- qsec: 1/4 mile time
+- vs: Engine (0 = V-shaped, 1 = straight)
+- am: Transmission (0 = automatic, 1 = manual)
+- gear: Number of forward gears
+- carb: Number of carburetors
